@@ -7,12 +7,13 @@ PLAYER_START_X = 370
 PLAYER_START_Y = 380
 ENEMY_START_Y_MIN = 50
 ENEMY_START_Y_MAX = 150
-ENEMY_SPEED_X = 4
-ENEMY_SPEED_Y = 40
+ENEMY_SPEED_X = 1.5
+ENEMY_SPEED_Y = 15
 BULLET_SPEED_Y = 10
 COLLISION_DISTANCE = 27
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+background = pygame.image.load("background.png")
 pygame.display.set_caption("Space Invader")
 icon = pygame.image.load('ufo.png')
 pygame.display.set_icon(icon)
@@ -65,10 +66,12 @@ while running:
     screen.fill((0, 0, 0))
     screen.blit(background, (0, 0))
     for event in pygame.event.get():
-        if event.type == pygame.QUIT():
+        if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
+                playerX_change = -5
+            if event.key == pygame.K_RIGHT:
                 playerX_change = 5
             if event.key == pygame.K_SPACE and bullet_state == 'ready':
                 bulletX = playerX
@@ -78,4 +81,28 @@ while running:
     playerX += playerX_change
     playerX = max(0, min(playerX, SCREEN_WIDTH - 64))
     for i in range(num_of_enemies):
-        
+        if enemyY[i] > 340:
+            for j in range(num_of_enemies):
+                enemyY[j] = 2000
+            game_over_text()
+            break
+        enemyX[i] += enemyX_change[i]
+        if enemyX[i] <= 0 or enemyX[i] >= SCREEN_WIDTH-64:
+            enemyX_change[i] *= -1
+            enemyY[i] += enemyY_change[i]
+        if isCollision(enemyX[i], enemyY[i], bulletX, bulletY):
+            bulletY = PLAYER_START_Y
+            bullet_state = 'ready'
+            score_value += 1
+            enemyX[i] = random.randint(0, SCREEN_WIDTH - 64)
+            enemyY[i] = random.randint(ENEMY_START_Y_MIN, ENEMY_START_Y_MAX)
+        enemy(enemyX[i], enemyY[i], i)
+        if bulletY <= 0:
+            bulletY = PLAYER_START_Y
+            bullet_state = "ready"
+        elif bullet_state == "fire":
+            fire_bullet(bulletX, bulletY)
+            bulletY -= bulletY_change
+        player(playerX, playerY)
+        show_score(textX, textY)
+        pygame.display.update()
