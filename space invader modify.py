@@ -13,7 +13,7 @@ BULLET_SPEED_Y = 10
 COLLISION_DISTANCE = 27
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-background = pygame.image.load("space.png")
+background = pygame.image.load("background.png")
 pygame.display.set_caption("Space Game")
 icon = pygame.image.load('ufo.png')
 pygame.display.set_icon(icon)
